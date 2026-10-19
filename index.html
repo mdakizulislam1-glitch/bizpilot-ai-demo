@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BizPilot AI — Invoice Demo</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 18px;
+  background: #f4f6f8;
+  color: #17202a;
+}
+main {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+}
+h1 { font-size: 1.5rem; }
+label { display: block; margin-top: 14px; font-weight: 600; }
+input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  margin-top: 5px;
+  border: 1px solid #b8c2cc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 9px;
+  background: #174ea6;
+  color: white;
+  font-size: 16px;
+}
+#result {
+  margin-top: 20px;
+  padding: 14px;
+  background: #eef4ff;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+small { color: #52606d; }
+</style>
+</head>
+<body>
+<main>
+<h1>BizPilot AI</h1>
+<p>Freelancer invoice builder · USD</p>
+
+<form id="invoiceForm">
+<label>Business name
+<input id="business" required maxlength="100"
+ value="Example Creative Studio"></label>
+
+<label>Freelancer name
+<input id="freelancer" required maxlength="100"
+ value="Alex Morgan"></label>
+
+<label>Client name
+<input id="client" required maxlength="100"
+ value="Sample Client"></label>
+
+<label>Invoice number
+<input id="number" required maxlength="40"
+ pattern="[A-Za-z0-9_-]+"
+ value="BPA-0001"></label>
+
+<label>Service description
+<input id="service" required maxlength="200"
+ value="Website design service"></label>
+
+<label>Quantity
+<input id="quantity" type="number" required
+ min="0.01" step="0.01" value="1"></label>
+
+<label>Unit price (USD)
+<input id="price" type="number" required
+ min="0" step="0.01" value="250"></label>
+
+<label>Discount (USD)
+<input id="discount" type="number" required
+ min="0" step="0.01" value="25"></label>
+
+<button type="submit">Generate invoice preview</button>
+</form>
+
+<section id="result" aria-live="polite">
+Your invoice preview will appear here.
+</section>
+<small>Demo only. No payment is processed. Do not enter
+real sensitive customer or payment information.</small>
+</main>
+
+<script>
+const form = document.getElementById("invoiceForm");
+const result = document.getElementById("result");
+const money = n => "$" + n.toFixed(2);
+
+form.addEventListener("submit", event => {
+  event.preventDefault();
+
+  const quantity = Number(document.getElementById("quantity").value);
+  const price = Number(document.getElementById("price").value);
+  const discount = Number(document.getElementById("discount").value);
+
+  if (![quantity, price, discount].every(Number.isFinite) ||
+      quantity <= 0 || price < 0 || discount < 0) {
+    result.textContent = "Error: Enter valid non-negative amounts.";
+    return;
+  }
+
+  const subtotal = Math.round(quantity * price * 100) / 100;
+  if (discount > subtotal) {
+    result.textContent = "Error: Discount cannot exceed subtotal.";
+    return;
+  }
+
+  const total = Math.round((subtotal - discount) * 100) / 100;
+  const fields = [
+    ["Business", "business"],
+    ["From", "freelancer"],
+    ["Bill to", "client"],
+    ["Invoice number", "number"],
+    ["Service", "service"]
+  ];
+
+  const lines = fields.map(([label, id]) =>
+    label + ": " + document.getElementById(id).value.trim()
+  );
+
+  lines.push(
+    "Quantity: " + quantity,
+    "Unit price: " + money(price),
+    "Subtotal: " + money(subtotal),
+    "Discount: " + money(discount),
+    "TOTAL DUE: " + money(total),
+    "Demo only; payment has not been processed."
+  );
+
+  result.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
