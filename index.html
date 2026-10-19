@@ -1,151 +1,318 @@
+
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BizPilot AI — Invoice Demo</title>
+<meta name="theme-color" content="#174ea6">
+<title>BizPilot AI — Invoice Builder</title>
+
 <style>
-body {
-  font-family: system-ui, sans-serif;
-  max-width: 620px;
-  margin: 0 auto;
-  padding: 18px;
-  background: #f4f6f8;
+:root {
+  font-family: system-ui, -apple-system, sans-serif;
   color: #17202a;
+  background: #f4f6f8;
 }
+
+* { box-sizing: border-box; }
+
+body {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
 main {
-  background: white;
-  padding: 20px;
+  background: #fff;
+  padding: 22px;
   border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.06);
 }
-h1 { font-size: 1.5rem; }
-label { display: block; margin-top: 14px; font-weight: 600; }
+
+h1 { margin-top: 0; font-size: 1.65rem; }
+.intro { color: #52606d; }
+
+label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
 input {
-  box-sizing: border-box;
+  display: block;
   width: 100%;
+  margin-top: 6px;
   padding: 12px;
-  margin-top: 5px;
   border: 1px solid #b8c2cc;
   border-radius: 8px;
+  font: inherit;
   font-size: 16px;
 }
+
+input:focus {
+  outline: 2px solid #174ea6;
+  outline-offset: 1px;
+}
+
 button {
+  display: block;
   width: 100%;
-  padding: 14px;
-  margin-top: 18px;
+  margin-top: 16px;
+  padding: 13px;
   border: 0;
   border-radius: 9px;
   background: #174ea6;
   color: white;
-  font-size: 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
+
+button.secondary {
+  background: #263746;
+}
+
+button:focus-visible {
+  outline: 3px solid #f0ad4e;
+  outline-offset: 3px;
+}
+
 #result {
   margin-top: 20px;
-  padding: 14px;
-  background: #eef4ff;
+  padding: 18px;
+  border: 1px solid #d5deea;
   border-radius: 10px;
+  background: #f7f9fc;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  line-height: 1.65;
 }
-small { color: #52606d; }
+
+#result h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+}
+
+.status {
+  min-height: 1.5em;
+  margin-top: 10px;
+  color: #a12622;
+}
+
+small {
+  display: block;
+  margin-top: 16px;
+  color: #52606d;
+  line-height: 1.5;
+}
+
+@media print {
+  @page {
+    size: auto;
+    margin: 15mm;
+  }
+
+  :root, body {
+    background: #fff;
+    color: #000;
+  }
+
+  body {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  main {
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .no-print,
+  #invoiceForm,
+  .intro,
+  #status,
+  main > small {
+    display: none !important;
+  }
+
+  #result {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: #fff;
+    color: #000;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  #result h2 {
+    font-size: 22pt;
+  }
+}
 </style>
 </head>
+
 <body>
 <main>
-<h1>BizPilot AI</h1>
-<p>Freelancer invoice builder · USD</p>
+  <h1 class="no-print">BizPilot AI</h1>
+  <p class="intro">Simple freelancer invoice builder · USD</p>
 
-<form id="invoiceForm">
-<label>Business name
-<input id="business" required maxlength="100"
- value="Example Creative Studio"></label>
+  <form id="invoiceForm">
+    <label for="business">Business name</label>
+    <input id="business" required maxlength="100"
+      value="Example Creative Studio">
 
-<label>Freelancer name
-<input id="freelancer" required maxlength="100"
- value="Alex Morgan"></label>
+    <label for="freelancer">Freelancer name</label>
+    <input id="freelancer" required maxlength="100"
+      value="Alex Morgan">
 
-<label>Client name
-<input id="client" required maxlength="100"
- value="Sample Client"></label>
+    <label for="client">Client name</label>
+    <input id="client" required maxlength="100"
+      value="Sample Client">
 
-<label>Invoice number
-<input id="number" required maxlength="40"
- pattern="[A-Za-z0-9_-]+"
- value="BPA-0001"></label>
+    <label for="number">Invoice number</label>
+    <input id="number" required maxlength="40"
+      pattern="[A-Za-z0-9_-]+"
+      title="Use letters, numbers, hyphens, or underscores."
+      value="BPA-0001">
 
-<label>Service description
-<input id="service" required maxlength="200"
- value="Website design service"></label>
+    <label for="service">Service description</label>
+    <input id="service" required maxlength="200"
+      value="Website design service">
 
-<label>Quantity
-<input id="quantity" type="number" required
- min="0.01" step="0.01" value="1"></label>
+    <label for="quantity">Quantity</label>
+    <input id="quantity" type="number" required
+      min="0.01" step="0.01" value="1">
 
-<label>Unit price (USD)
-<input id="price" type="number" required
- min="0" step="0.01" value="250"></label>
+    <label for="price">Unit price (USD)</label>
+    <input id="price" type="number" required
+      min="0" step="0.01" value="250">
 
-<label>Discount (USD)
-<input id="discount" type="number" required
- min="0" step="0.01" value="25"></label>
+    <label for="discount">Discount (USD)</label>
+    <input id="discount" type="number" required
+      min="0" step="0.01" value="25">
 
-<button type="submit">Generate invoice preview</button>
-</form>
+    <button type="submit">Generate invoice preview</button>
+  </form>
 
-<section id="result" aria-live="polite">
-Your invoice preview will appear here.
-</section>
-<small>Demo only. No payment is processed. Do not enter
-real sensitive customer or payment information.</small>
+  <p id="status" class="status" role="status"
+    aria-live="polite"></p>
+
+  <section id="result" aria-live="polite">
+    <p>Your invoice preview will appear here.</p>
+  </section>
+
+  <button id="printButton" class="secondary no-print"
+    type="button">Print / Save as PDF</button>
+
+  <small>
+    Demo only. No payment is processed. This tool does not
+    verify tax compliance or send invoices. Do not enter
+    real sensitive customer or payment information.
+  </small>
 </main>
 
 <script>
+"use strict";
+
 const form = document.getElementById("invoiceForm");
 const result = document.getElementById("result");
-const money = n => "$" + n.toFixed(2);
+const status = document.getElementById("status");
+const printButton = document.getElementById("printButton");
+
+let invoiceGenerated = false;
+
+const getValue = id =>
+  document.getElementById(id).value.trim();
+
+const money = value =>
+  "$" + value.toFixed(2);
+
+function showMessage(message) {
+  status.textContent = message;
+}
 
 form.addEventListener("submit", event => {
   event.preventDefault();
+  invoiceGenerated = false;
+  showMessage("");
 
-  const quantity = Number(document.getElementById("quantity").value);
-  const price = Number(document.getElementById("price").value);
-  const discount = Number(document.getElementById("discount").value);
+  if (!form.reportValidity()) return;
 
-  if (![quantity, price, discount].every(Number.isFinite) ||
-      quantity <= 0 || price < 0 || discount < 0) {
-    result.textContent = "Error: Enter valid non-negative amounts.";
+  const quantity = Number(getValue("quantity"));
+  const price = Number(getValue("price"));
+  const discount = Number(getValue("discount"));
+
+  if (
+    ![quantity, price, discount].every(Number.isFinite) ||
+    !Number.isFinite(quantity * price) ||
+    quantity <= 0 || price < 0 || discount < 0
+  ) {
+    showMessage("Error: Enter valid amounts.");
     return;
   }
 
   const subtotal = Math.round(quantity * price * 100) / 100;
-  if (discount > subtotal) {
-    result.textContent = "Error: Discount cannot exceed subtotal.";
+
+  if (!Number.isFinite(subtotal) || discount > subtotal) {
+    showMessage("Error: Discount cannot exceed subtotal.");
     return;
   }
 
   const total = Math.round((subtotal - discount) * 100) / 100;
-  const fields = [
-    ["Business", "business"],
-    ["From", "freelancer"],
-    ["Bill to", "client"],
-    ["Invoice number", "number"],
-    ["Service", "service"]
+
+  const invoice = {
+    business: getValue("business"),
+    freelancer: getValue("freelancer"),
+    client: getValue("client"),
+    number: getValue("number"),
+    service: getValue("service"),
+    quantity,
+    price,
+    subtotal,
+    discount,
+    total
+  };
+
+  const lines = [
+    "INVOICE",
+    "--------------------------------",
+    "Business: " + invoice.business,
+    "From: " + invoice.freelancer,
+    "Bill to: " + invoice.client,
+    "Invoice number: " + invoice.number,
+    "Service: " + invoice.service,
+    "--------------------------------",
+    "Quantity: " + invoice.quantity,
+    "Unit price: " + money(invoice.price),
+    "Subtotal: " + money(invoice.subtotal),
+    "Discount: " + money(invoice.discount),
+    "TOTAL DUE: " + money(invoice.total),
+    "--------------------------------",
+    "Demo only. Payment has not been processed."
   ];
 
-  const lines = fields.map(([label, id]) =>
-    label + ": " + document.getElementById(id).value.trim()
-  );
+  const heading = document.createElement("h2");
+  heading.textContent = "INVOICE";
 
-  lines.push(
-    "Quantity: " + quantity,
-    "Unit price: " + money(price),
-    "Subtotal: " + money(subtotal),
-    "Discount: " + money(discount),
-    "TOTAL DUE: " + money(total),
-    "Demo only; payment has not been processed."
-  );
+  const details = document.createElement("p");
+  details.textContent = lines.slice(2).join("\n");
 
-  result.textContent = lines.join("\n");
+  result.replaceChildren(heading, details);
+  invoiceGenerated = true;
+  showMessage("Invoice preview generated successfully.");
+});
+
+printButton.addEventListener("click", () => {
+  if (!invoiceGenerated) {
+    showMessage("Generate a valid invoice preview first.");
+    return;
+  }
+
+  showMessage("");
+  window.print();
 });
 </script>
 </body>
